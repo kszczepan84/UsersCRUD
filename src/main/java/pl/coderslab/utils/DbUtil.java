@@ -1,5 +1,7 @@
 package pl.coderslab.utils;
 
+import pl.coderslab.UserDao;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -13,7 +15,8 @@ public class DbUtil {
 
     public static Connection getConnection() throws SQLException {
 
-        return getInstance().getConnection();   }
+        return getInstance().getConnection();
+    }
 
     private static DataSource getInstance() {
 
@@ -23,16 +26,25 @@ public class DbUtil {
 
                 Context initContext = new InitialContext();
 
-                Context envContext = (Context)initContext.lookup("java:/comp/env");
+                Context envContext = (Context) initContext.lookup("java:/comp/env");
 
-                dataSource = (DataSource)envContext.lookup("jdbc/users");
+                dataSource = (DataSource) envContext.lookup("jdbc/users");
 
-            } catch (NamingException e) { e.printStackTrace(); }
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
 
         }
 
         return dataSource;
 
     }
+
+//    public static void main(String[] args) throws SQLException {
+//        Connection conn = DbUtil.getConnection();
+//        UserDao userDaoList = new UserDao();
+//        userDaoList.findAll();
+//        System.out.println(userDaoList.toString());
+//    }
 
 }

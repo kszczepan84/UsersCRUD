@@ -5,6 +5,7 @@ import pl.coderslab.utils.DbUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -93,27 +94,28 @@ public class UserDao {
         }
     }
 
-    public void findAll() {
+    public User [] findAll() {
         try (Connection conn = DbUtil.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(FIND_ALL_USERS_QUERY);
             ResultSet resultSet = statement.executeQuery();
             List<Object> list = new ArrayList<>();
-            int counter = 0;
+            int counter=0;
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getInt("id"));
                 user.setUserName(resultSet.getString("username"));
                 user.setEmail(resultSet.getString("email"));
                 user.setPassword(resultSet.getString("password"));
-                list.add(counter, user);
+                list.add(counter,user);
                 counter++;
             }
-            for (Object element : list) {
-                System.out.println(element.toString());
-            }
+            User[] users = new User [list.size()];
+            users =list.toArray(users);
+//            System.out.println(Arrays.toString(users));
+            return users;
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        } return null;
     }
 }
 

@@ -12,55 +12,47 @@ import java.io.IOException;
 public class UserEdit extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        wczytujemy dane przekazane z formularza list ( id uzytkownika)
-        String userId = request.getParameter("userId");
-
-//        przekazujemy dane do metody Post poniewaz beda przesylane wrazliwe dane ( haslo )
-            doPost(request, response);
-        }
-
-
-
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        pobieramy parametr z metody doGet i zapisujemy
-        int userIdInteger = Integer.parseInt(request.getParameter("userId"));
-
-//        tworzymy obiekt Dao, wczytujemy okreslony po Id obiekt User za pomocą metody UserDao read (User user)
+//        pobieramy parametr z formularza list.jsp i zapisujemy
+        int userId = Integer.parseInt(request.getParameter("id"));
+        //        tworzymy obiekt Dao, wczytujemy okreslony po Id obiekt User za pomocą metody UserDao read (User user)
         UserDao userDao = new UserDao();
-        User user = userDao.read(userIdInteger);
-
-//        getteami pobieramy informacje o starym uzytkowniku
-        String oldUser = user.getUserName();
-        String oldEmail = user.getEmail();
-        request.setAttribute("oldUser", oldUser);
-        request.setAttribute("oldEmail", oldEmail);
-
-//        otwieramy strone aby pobrac dane z pól wypełnianych przez użytkownika
+        User read = userDao.read(userId);
+//        ustawiam zmienna potrzebna do formularza jsp czyli uzytkownika z klasy User user o pobranym wczesniej id,
+//        metoda userDao read pobiera z SQL tego uzytkownika i zapisujemy pod nazwa "user", gdzie user to przedrostek
+//        a obiekt to druga czesc po kropce czyli pobieramy metoda read uzytkownika o id=1, otrzymujemy user z polami konstruktora
+//          id, userName,email,password czyli aby pobrac do jsp musimy podac przedrostek czyli USER.id, USER.userName, USER.email
+//          USER.password w apostrofie i z klamrą oraz dolarem:
+//        "${USER.id}" "${USER.userName}" "${USER.email}" "USER.password"
+//        user.userName = userName;
+//        this.email = email;
+//        this.password = password;
+        request.setAttribute("USER", read);
+//        przekierunkowanie danych do formularza jsp
         getServletContext().getRequestDispatcher("/user/edit.jsp").forward(request, response);
 
-//        przypisujemy pobranym parametrom z formularza na zmienne
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
 
-//        setterami ustawiamy argumanty obiektu user
-        user.setUserName(name);
-        user.setEmail(email);
-        user.setPassword(password);
+    }
 
-//        jezeli uzytkownik nie wpisze danych i wroci do listy to nic sie nie zapisze ( w przeciwnym razie
-//        zapisza sie puste pola w danym ID)
-        String buttonPress = request.getParameter("submit");
-        if (buttonPress!=null && buttonPress.equals("confirm")) {
-//        uruchamiam metoda userDao update ktora zapisuje okreslonego po id user'a pola name, email,password
-            userDao.update(user);
-        }
-//        !!!chcemy przekierunkowac z powortem na liste uzytkownikow ale nie dziala!!!
-//        getServletContext().getRequestDispatcher("/user/list").forward(request, response);
-//        tez nie dziala
-        response.sendRedirect("/user/list");
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//       pobieramy nowe wartosci z parametru name="" wpisane przez uzytkownika w formularzu
+
+        String userIdString = request.getParameter("userId");
+        String userName = request.getParameter("userName");
+        String userEmail = request.getParameter("userEmail");
+        String userPassword = request.getParameter("userPassword");
+        int userId = Integer.parseInt(userIdString);
+
+//        tworzymy nowego uzytkownika z podancyh wartosci ( id jest pobrane ale
+//    w formularzu ylo niewidoczne wiec pozostaje po staremu)
+        User user = new User();
+        user.setId(userId);
+        user.setUserName(userName);
+        user.setEmail(userEmail);
+        user.setPassword(userPassword);
+//        tworzymy obiekt UserDao aby zapisac w SQL nowego uzytkownika po podanym id
+        UserDao userDao=new UserDao();
+        userDao.update(user);
+        response.sendRedirect(request.getContextPath()+"/user/list");
     }
 }

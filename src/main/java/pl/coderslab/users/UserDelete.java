@@ -12,12 +12,12 @@ import java.io.IOException;
 public class UserDelete extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //        wczytujemy dane przekazane z formularza list ( id uzytkownika)
-        int userIdInteger = Integer.parseInt(request.getParameter("userId"));
+        //        wczytujemy dane przekazane z formularza list.jsp ( id uzytkownika)
+        int userIdInteger = Integer.parseInt(request.getParameter("id"));
         //        tworzymy obiekt Dao, wczytujemy okreslony po Id obiekt User za pomocą metody UserDao read (User user)
         UserDao userDao = new UserDao();
         userDao.delete(userIdInteger);
-        response.sendRedirect("/user/list");
+        response.sendRedirect(request.getContextPath() + "/user/list");
 
     }
 

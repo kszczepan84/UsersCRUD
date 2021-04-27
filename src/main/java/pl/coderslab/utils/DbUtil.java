@@ -40,11 +40,5 @@ public class DbUtil {
 
     }
 
-//    public static void main(String[] args) throws SQLException {
-//        Connection conn = DbUtil.getConnection();
-//        UserDao userDaoList = new UserDao();
-//        userDaoList.findAll();
-//        System.out.println(userDaoList.toString());
-//    }
 
 }
